@@ -4,14 +4,72 @@
     <meta charset="UTF-8">
     <title>Manage Database</title>
     <style>
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            text-align: left;
+        body {
+            --bg-color: #eee;
+            --fg-color: #466;
+            --bg-highlight: #fff;
+            --fg-highlight: #000;
+            
+            font-family: sans-serif;
+            color: var(--fg-color);
+            background-color: var(--bg-color);
         }
+        
+        #main {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: x-large;
+        }
+        
         table {
-            margin-bottom: 5px;
+            border-collapse: collapse;
+            margin-bottom: 10px
+        }
+        
+        th, td {
+            padding: 5px 10px;
+        }
+        
+        tr:hover {
+            color: var(--fg-highlight);
+        }
+        
+        fieldset {
+            border: 1px solid var(--fg-color);
+            background-color: var(--bg-highlight);
+            border-radius: 5px;
+            margin: 0;
+        }
+        
+        button, input {
+            display: inline-block;
+            color: var(--bg-color);
+            background-color: var(--fg-color);
+            border: none;
+            border-radius: 5px;
+            padding: 2px 10px;
+            cursor: pointer;
+        }
+        
+        button {
+            padding: 5px 10px;
+        }
+        
+        input[type=submit]:hover {
+            background-color: var(--fg-highlight);
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            body {
+                --bg-color: #0a0a0a;
+                --fg-color: #cdd;
+                --bg-highlight: #000;
+                --fg-highlight: #fff;
+            }
         }
     </style>
     <script>
@@ -220,7 +278,7 @@
     </script>
 </head>
 <body>
-    <h2>Database Management</h2>
+    <h1>Database Management</h1>
     <fieldset>
         <legend>Flashcards</legend>
         <table id="cardsTable">
