@@ -61,7 +61,6 @@ function rehearse($deckDirectory, $selectedDecks) {
             foreach ($deckContent['cards'] as &$card) {
                 $card['id'] = $deckFilename . '#' . $card['id'];
                 $card['deckFilename'] = $deckFilename;
-                $card['activeDirection'] = 'front'; // default starting direction
                 $card['allowDirectionChange'] = $allowDirectionChange;
             }
             unset($card);
@@ -142,6 +141,8 @@ EOT;
                             repetition: 0,
                             interval: 0,
                             easeFactor: 2.5,
+                            activeDirection: 'front',
+                            nextReviewDate: Date.now(),
                         });
                     }
                 };
@@ -155,37 +156,6 @@ EOT;
                 reject(new Error('Error loading cards into DB'));
             };
         });
-    }
-
-    function displayCards() {
-        const transaction = db.transaction(['cards'], 'readonly');
-        const store = transaction.objectStore('cards');
-        const request = store.getAll();
-
-        request.onsuccess = function() {
-            const cards = request.result;
-            const displayArea = document.getElementById('main');
-            displayArea.innerHTML = '';
-
-            cards.forEach(card => {
-                const cardElement = document.createElement('div');
-                cardElement.style.marginBottom = "20px";
-
-                for (const [key, value] of Object.entries(card)) {
-                    const propertyElement = document.createElement('p');
-                    propertyElement.style.marginBottom = "0px";
-                    propertyElement.style.marginTop = "0px";
-                    propertyElement.textContent = `${key}: ${value}`;
-                    cardElement.appendChild(propertyElement);
-                }
-
-                displayArea.appendChild(cardElement);
-            });
-        };
-
-        request.onerror = function() {
-            console.error('Error fetching cards from DB');
-        };
     }
     </script>
 </head>
