@@ -5,7 +5,7 @@ $deckDirectory = __DIR__ . DIRECTORY_SEPARATOR . 'decks';
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['decks'])) {
-    // POST data indicates decks have been selected; switching to rehearsing mode
+    // POST data indicates decks have been selected; switching to rehearse mode
     $selectedDecks = json_encode($_POST['decks'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
     $rehearseScript = rehearse($deckDirectory, $_POST['decks']);
     $rehearseHTML = <<<EOL
@@ -87,7 +87,7 @@ function rehearse($deckDirectory, $selectedDecks) {
 
     $deckData = json_encode($deckData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
     
-    // producing script to load data into database, needed for rehearsal
+    // producing script to load data into database upon page load, as needed for rehearsal
     $rehearseScript = <<<EOT
     document.addEventListener("DOMContentLoaded", function() {
         initIndexedDB().then(() => {
@@ -117,12 +117,13 @@ EOT;
     // reproducing rehearsal code here in rehearsal mode
 <?php
 if(isset($rehearseScript) && !empty($rehearseScript)) { 
-    echo $rehearseScript;
-    echo 'const selectedDecks = JSON.parse(\'' . $selectedDecks . '\');';
+    echo '    const selectedDecks = JSON.parse(\'' . $selectedDecks . '\');' . PHP_EOL;
+    echo $rehearseScript . PHP_EOL;
 };
 ?>
 
     function initIndexedDB() {
+        // initialising database
         return new Promise((resolve, reject) => {
             const request = indexedDB.open('FlashcardsDB', 1);
 
@@ -141,27 +142,27 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             };
 
             request.onerror = function(event) {
-                console.error('Error opening IndexedDB:', event);
-                reject(new Error('Error opening IndexedDB'));
+                console.error('Error opening database:', event);
+                reject(new Error('Error opening database'));
             };
         });
     }
 
     function loadCardsIntoDB(deckData) {
+        // loading cards from currently selected decks into database
         return new Promise((resolve, reject) => {
             const transaction = db.transaction(['cards'], 'readwrite');
             const store = transaction.objectStore('cards');
             
             deckData.forEach(card => {
                 // checking if card with same ID already exists, adding new card otherwise
-                const getRequest = store.get(card.id);                
-                
-                // rounding initial time to minute precision
-                const now = new Date();
-                now.setSeconds(0, 0);
-                
+                const getRequest = store.get(card.id);                                
                 getRequest.onsuccess = function() {
-                    if (!getRequest.result) {
+                    if (!getRequest.result) {                        
+                        // rounding initial time to minute precision
+                        const now = new Date();
+                        now.setSeconds(0, 0);
+                        
                         store.add({
                             ...card,
                             repetition: 0,
@@ -170,7 +171,7 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
                             activeDirection: 'front',
                             nextReviewDate: now.getTime(),
                         });
-                    }
+                    };
                 };
             });
 
@@ -178,13 +179,15 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
                 resolve();
             };
 
-            transaction.onerror = function() {
-                reject(new Error('Error loading cards into DB'));
+            transaction.onerror = function(event) {
+                console.error('Error loading cards into database', event);
+                reject(new Error('Error loading cards into database'));
             };
         });
     }
     
     function getDueCardsFromDB(selectedDecks) {
+        // getting cards from database that are in the selected decks and due for review
         return new Promise((resolve, reject) => {
             const transaction = db.transaction(['cards'], 'readonly');
             const store = transaction.objectStore('cards');
@@ -195,39 +198,38 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             request.onsuccess = event => {
                 const cursor = event.target.result;
                 if (cursor) {
+                    // pushing all due cards
                     let card = cursor.value;
-                    // Check if the card's deck is in selectedDecks and if the card is due for review
                     if (selectedDecks.includes(card.deckFilename) && card.nextReviewDate <= now) {
                         dueCards.push(card);
                     }
                     cursor.continue();
                 } else {
-                    // No more entries, resolve the promise with the filtered due cards
+                    // resolving promise when there are no further entries
                     resolve(dueCards);
                 }
             };
 
-            request.onerror = event => {
-                reject('Failed to fetch due cards:', event.target.error);
+            request.onerror = function(event) {
+                console.error('Failed to fetch due cards:', event);
+                reject(new Error('Failed to fetch due cards'));
             };
         });
     }
 
     function selectNextCard(selectedDecks) {
+        // selecting next card for review
         return new Promise((resolve, reject) => {
             getDueCardsFromDB(selectedDecks).then(dueCards => {
                 if (dueCards.length === 0) {
-                    resolve(null); // No cards are due for review
+                    // no cards due
+                    resolve(null);
                     return;
                 }
 
-                // Find the earliest nextReviewDate among the due cards
+                // finding card with earliest nextReviewDate, selecting random in case there's multiple
                 const earliestReviewDate = Math.min(...dueCards.map(card => card.nextReviewDate));
-
-                // Filter for cards that match this earliest nextReviewDate
                 const earliestDueCards = dueCards.filter(card => card.nextReviewDate === earliestReviewDate);
-
-                // Select a card at random if there are multiple, or just select the card if there's only one
                 const cardToShow = earliestDueCards[Math.floor(Math.random() * earliestDueCards.length)];
 
                 resolve(cardToShow);
@@ -238,27 +240,24 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
     }
 
     function displayCard(card) {
+        // showing card to user
         if (card) {
-            currentCard = card;
-            
-            // Implement logic to display the card
-            // For example, showing the 'front' or 'back' based on 'activeDirection'
+            currentCard = card;            
             console.log('Showing card:', card);
-            const probeDiv = document.getElementById('probe');
-            const answerDiv = document.getElementById('answer');
-
-            // Resetting the answer div to hide the previous answer
-            // answerDiv.style.display = 'none';
             
+            // selecting which side to present first
             if (card.activeDirection === 'both') {
-                // Randomly select front or back
                 currentDirection = Math.random() < 0.5 ? 'front' : 'back';
             } else {
-                // Use the specified activeDirection
                 currentDirection = card.activeDirection;
             }
 
-            // Displaying the probe side of the card
+            // updating html to display card            
+            const probeDiv = document.getElementById('probe');
+            const answerDiv = document.getElementById('answer');
+            
+            // answerDiv.style.display = 'none';
+            
             if(currentDirection === 'front') {
                 probeDiv.textContent = card.front;
                 answerDiv.textContent = card.back;
@@ -268,9 +267,8 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             }
         }
     }
-
-
     </script>
+    <noscript>Unfortunately, this page requires JavaScript, which your browser does not support.</noscript>
 </head>
     
 <body>

@@ -22,6 +22,7 @@
         });
         
         function initIndexedDB() {
+            // initialising database
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open('FlashcardsDB', 1);
 
@@ -40,12 +41,11 @@
                 };
 
                 request.onerror = function(event) {
-                    console.error('Error opening IndexedDB:', event);
-                    reject(new Error('Error opening IndexedDB'));
+                    console.error('Error opening database:', event);
+                    reject(new Error('Error opening database'));
                 };
             });
         }
-
         function loadCards() {
             const transaction = db.transaction(['cards'], 'readonly');
             const store = transaction.objectStore('cards');
