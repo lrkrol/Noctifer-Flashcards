@@ -1,0 +1,21 @@
+{
+    "header": {
+        "name": "Basic Persian Words",
+        "description": "Learn basic Persian words and phrases.",
+        "allowDirectionChange": true
+    },
+    "cards": [
+        {
+            "id": "1",
+            "front": "سلام",
+            "back": "Hello",
+            "audio": ""
+        },
+        {
+            "id": "2",
+            "front": "خداحافظ",
+            "back": "Goodbye",
+            "audio": ""
+        }
+    ]
+}

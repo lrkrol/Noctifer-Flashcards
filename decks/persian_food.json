@@ -1,0 +1,21 @@
+{
+    "header": {
+        "name": "Persian Food",
+        "description": "Discover the names of various Persian foods.",
+        "allowDirectionChange": true
+    },
+    "cards": [
+        {
+            "id": "1",
+            "front": "چای",
+            "back": "Tea",
+            "audio": ""
+        },
+        {
+            "id": "2",
+            "front": "برنج",
+            "back": "Rice",
+            "audio": ""
+        }
+    ]
+}
