@@ -6,9 +6,20 @@ $deckDirectory = __DIR__ . DIRECTORY_SEPARATOR . 'decks';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['decks'])) {
     // POST data indicates decks have been selected; switching to rehearsing mode
-    $rehearseScript = rehearse($deckDirectory, $_POST['decks']);
-    $rehearseHTML = '<div id="probe"></div>' . PHP_EOL . '<div id="answer"></div>' . PHP_EOL;
     $selectedDecks = json_encode($_POST['decks'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
+    $rehearseScript = rehearse($deckDirectory, $_POST['decks']);
+    $rehearseHTML = <<<EOL
+        <div id="probe"></div>
+        <div id="answer"></div>
+        <div id="responses">
+            <div id="show">Show answer</div>
+            <div id="again">Again</div>
+            <div id="hard">Hard</div>
+            <div id="good">Good</div>
+            <div id="easy">Easy</div>
+        </div>
+
+EOL;
 } else {
     // showing list of available decks
     $deckHTML = listDecks($deckDirectory);
@@ -100,6 +111,7 @@ EOT;
 <head>
     <script>
     let db;
+    let currentCard = null;
         
     // reproducing rehearsal code here in rehearsal mode
 <?php
@@ -226,6 +238,8 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
 
     function displayCard(card) {
         if (card) {
+            currentCard = card;
+            
             // Implement logic to display the card
             // For example, showing the 'front' or 'back' based on 'activeDirection'
             console.log('Showing card:', card);
@@ -234,14 +248,22 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
 
             // Resetting the answer div to hide the previous answer
             // answerDiv.style.display = 'none';
+            
+            if (card.activeDirection === 'both') {
+                // Randomly select front or back
+                currentDirection = Math.random() < 0.5 ? 'front' : 'back';
+            } else {
+                // Use the specified activeDirection
+                currentDirection = card.activeDirection;
+            }
 
             // Displaying the probe side of the card
-            if(card.activeDirection === 'front') {
+            if(currentDirection === 'front') {
                 probeDiv.textContent = card.front;
-                answerDiv.textContent = card.back; // Prepare the answer to be shown later
+                answerDiv.textContent = card.back;
             } else {
                 probeDiv.textContent = card.back;
-                answerDiv.textContent = card.front; // Prepare the answer to be shown later
+                answerDiv.textContent = card.front;
             }
         }
     }
