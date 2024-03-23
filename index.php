@@ -8,6 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['decks'])) {
     // POST data indicates decks have been selected; switching to rehearsing mode
     $rehearseScript = rehearse($deckDirectory, $_POST['decks']);
     $rehearseHTML = '<div id="probe"></div>' . PHP_EOL . '<div id="answer"></div>' . PHP_EOL;
+    $selectedDecks = json_encode($_POST['decks'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
 } else {
     // showing list of available decks
     $deckHTML = listDecks($deckDirectory);
@@ -79,7 +80,9 @@ function rehearse($deckDirectory, $selectedDecks) {
     document.addEventListener("DOMContentLoaded", function() {
         initIndexedDB().then(() => {
             const deckData = JSON.parse('$deckData');
-            loadCardsIntoDB(deckData).then(() => {displayCards();});
+            loadCardsIntoDB(deckData).then(() => {
+                selectNextCard(selectedDecks).then(cardToShow => {displayCard(cardToShow);})
+            });
         });
     });
     
@@ -97,9 +100,14 @@ EOT;
 <head>
     <script>
     let db;
-    
-    // reproducing rehearsal script data here in rehearsal mode
-<?php if(isset($rehearseScript) && !empty($rehearseScript)) { echo $rehearseScript; }; ?>
+        
+    // reproducing rehearsal code here in rehearsal mode
+<?php
+if(isset($rehearseScript) && !empty($rehearseScript)) { 
+    echo $rehearseScript;
+    echo 'const selectedDecks = JSON.parse(\'' . $selectedDecks . '\');';
+};
+?>
 
     function initIndexedDB() {
         return new Promise((resolve, reject) => {
@@ -133,7 +141,12 @@ EOT;
             
             deckData.forEach(card => {
                 // checking if card with same ID already exists, adding new card otherwise
-                const getRequest = store.get(card.id);
+                const getRequest = store.get(card.id);                
+                
+                // rounding initial time to minute precision
+                const now = new Date();
+                now.setSeconds(0, 0);
+                
                 getRequest.onsuccess = function() {
                     if (!getRequest.result) {
                         store.add({
@@ -142,7 +155,7 @@ EOT;
                             interval: 0,
                             easeFactor: 2.5,
                             activeDirection: 'front',
-                            nextReviewDate: Date.now(),
+                            nextReviewDate: now.getTime(),
                         });
                     }
                 };
@@ -157,6 +170,83 @@ EOT;
             };
         });
     }
+    
+    function getDueCardsFromDB(selectedDecks) {
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(['cards'], 'readonly');
+            const store = transaction.objectStore('cards');
+            const now = Date.now();
+            const dueCards = [];
+
+            const request = store.openCursor();
+            request.onsuccess = event => {
+                const cursor = event.target.result;
+                if (cursor) {
+                    let card = cursor.value;
+                    // Check if the card's deck is in selectedDecks and if the card is due for review
+                    if (selectedDecks.includes(card.deckFilename) && card.nextReviewDate <= now) {
+                        dueCards.push(card);
+                    }
+                    cursor.continue();
+                } else {
+                    // No more entries, resolve the promise with the filtered due cards
+                    resolve(dueCards);
+                }
+            };
+
+            request.onerror = event => {
+                reject('Failed to fetch due cards:', event.target.error);
+            };
+        });
+    }
+
+    function selectNextCard(selectedDecks) {
+        return new Promise((resolve, reject) => {
+            getDueCardsFromDB(selectedDecks).then(dueCards => {
+                if (dueCards.length === 0) {
+                    resolve(null); // No cards are due for review
+                    return;
+                }
+
+                // Find the earliest nextReviewDate among the due cards
+                const earliestReviewDate = Math.min(...dueCards.map(card => card.nextReviewDate));
+
+                // Filter for cards that match this earliest nextReviewDate
+                const earliestDueCards = dueCards.filter(card => card.nextReviewDate === earliestReviewDate);
+
+                // Select a card at random if there are multiple, or just select the card if there's only one
+                const cardToShow = earliestDueCards[Math.floor(Math.random() * earliestDueCards.length)];
+
+                resolve(cardToShow);
+            }).catch(error => {
+                reject(error);
+            });
+        });
+    }
+
+    function displayCard(card) {
+        if (card) {
+            // Implement logic to display the card
+            // For example, showing the 'front' or 'back' based on 'activeDirection'
+            console.log('Showing card:', card);
+            const probeDiv = document.getElementById('probe');
+            const answerDiv = document.getElementById('answer');
+
+            // Resetting the answer div to hide the previous answer
+            // answerDiv.style.display = 'none';
+
+            // Displaying the probe side of the card
+            if(card.activeDirection === 'front') {
+                probeDiv.textContent = card.front;
+                answerDiv.textContent = card.back; // Prepare the answer to be shown later
+            } else {
+                probeDiv.textContent = card.back;
+                answerDiv.textContent = card.front; // Prepare the answer to be shown later
+            }
+        }
+    }
+
+
     </script>
 </head>
     
