@@ -9,13 +9,13 @@
             "id": "1",
             "front": "سلام",
             "back": "Hello",
-            "audio": ""
+            "audio": "/basic_persian_words/سلام.mp3"
         },
         {
             "id": "2",
             "front": "خداحافظ",
             "back": "Goodbye",
-            "audio": ""
+            "audio": "/basic_persian_words/خداحافظ.mp3"
         }
     ]
 }

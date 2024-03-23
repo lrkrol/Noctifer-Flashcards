@@ -74,6 +74,9 @@ function rehearse($deckDirectory, $selectedDecks) {
                 $card['id'] = $deckFilename . '#' . $card['id'];
                 $card['deckFilename'] = $deckFilename;
                 $card['allowDirectionChange'] = $allowDirectionChange;
+                if (!empty($card['audio'])) {
+                    $card['audio'] = str_replace(DIRECTORY_SEPARATOR, '/', $deckDirectory . $card['audio']);
+                }
             }
             unset($card);
 
@@ -83,8 +86,6 @@ function rehearse($deckDirectory, $selectedDecks) {
     }
 
     $deckData = json_encode($deckData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
-    
-    print_r($deckData);
     
     // producing script to load data into database, needed for rehearsal
     $rehearseScript = <<<EOT

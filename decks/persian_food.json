@@ -9,13 +9,13 @@
             "id": "1",
             "front": "چای",
             "back": "Tea",
-            "audio": ""
+            "audio": "/persian_food/چای.mp3"
         },
         {
             "id": "2",
             "front": "برنج",
             "back": "Rice",
-            "audio": ""
+            "audio": "/persian_food/برنج.mp3"
         }
     ]
 }
