@@ -15,14 +15,15 @@
             background-color: var(--bg-color);
         }
         
-        #main {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 20px;
-        }
-        
         h1 {
             font-size: x-large;
+        }
+        
+        fieldset {
+            border: 1px solid var(--fg-color);
+            background-color: var(--bg-highlight);
+            border-radius: 5px;
+            margin: 0;
         }
         
         table {
@@ -36,13 +37,6 @@
         
         tr:hover {
             color: var(--fg-highlight);
-        }
-        
-        fieldset {
-            border: 1px solid var(--fg-color);
-            background-color: var(--bg-highlight);
-            border-radius: 5px;
-            margin: 0;
         }
         
         button, input {
@@ -104,6 +98,8 @@
                 };
             });
         }
+        
+        
         function loadCards() {
             const transaction = db.transaction(['cards'], 'readonly');
             const store = transaction.objectStore('cards');
@@ -116,18 +112,21 @@
                 }
 
                 const tableBody = document.getElementById('cardsTable').getElementsByTagName('tbody')[0];
-                tableBody.innerHTML = ''; // Clear existing rows
+                
+                // clearing table
+                tableBody.innerHTML = '';
 
                 cards.forEach(card => {
+                    // inserting row for each card
                     const row = tableBody.insertRow();
                     
-                    // Display the 'id' field alongside other properties
+                    // inserting cell for each value
                     Object.entries(card).forEach(([key, value]) => {
                         const cell = row.insertCell();
                         cell.textContent = value;
                     });
 
-                    // Append a delete button to each row for card deletion functionality
+                    // inserting cell for delete button
                     const deleteCell = row.insertCell();
                     const deleteButton = document.createElement('button');
                     deleteButton.textContent = 'Delete';
@@ -138,8 +137,9 @@
         };
 
         const updateTableHeaders = (sampleCard) => {
+            // putting keys as headers
             const tableHead = document.getElementById('cardsTable').getElementsByTagName('thead')[0];
-            tableHead.innerHTML = ''; // Clear existing headers
+            tableHead.innerHTML = '';
             const headerRow = tableHead.insertRow();
 
             Object.keys(sampleCard).forEach(key => {
@@ -148,7 +148,7 @@
                 headerRow.appendChild(headerCell);
             });
 
-            // Optionally, add a header cell for the action column, if not already represented in sampleCard
+            // adding header for buttons
             if (!sampleCard.hasOwnProperty('action')) {
                 const actionHeaderCell = document.createElement('th');
                 actionHeaderCell.textContent = 'Action';
@@ -162,7 +162,7 @@
             store.delete(cardId);
 
             transaction.oncomplete = function() {
-                loadCards(); // Reload cards to update the table
+                loadCards();
             };
         };
         
@@ -174,25 +174,31 @@
                 if (!userConfirmed) {
                     console.log("Database deletion canceled by user.");
                     reject(new Error("Database deletion canceled by user."));
-                    return; // Exit the function if the user cancels
+                    return;
                 }
                 
-                if (db) { // Check if the db connection exists
+                // closing connection
+                if (db) {
                     console.log("Closing database connections...");
-                    db.close(); // Close the active connection
-                }
+                    db.close();
+                } else {
+                    // no database to delete
+                    console.log("No database to delete.");
+                    reject(new Error("No database to delete."));
+                    return;
+                };
 
-                // Proceed with the database deletion with some delay to ensure proper closure
+                // proceeding with the database deletion with some delay to ensure proper closure
                 setTimeout(() => {
                     const request = indexedDB.deleteDatabase('FlashcardsDB');
                     request.onsuccess = function () {
                         console.log("Database deleted successfully.");
-                        db = null; // Reset the db variable
+                        db = null;
 
                         const tableHead = document.getElementById('cardsTable').getElementsByTagName('thead')[0];
-                        tableHead.innerHTML = ''; // Clear existing headers
+                        tableHead.innerHTML = '';
                         const tableBody = document.getElementById('cardsTable').getElementsByTagName('tbody')[0];
-                        tableBody.innerHTML = ''; // Clear existing rows
+                        tableBody.innerHTML = '';
                         
                         resolve(db);
                     };
@@ -216,13 +222,13 @@
                 const dataStr = JSON.stringify(data);
                 const blob = new Blob([dataStr], {type: "application/json"});
 
-                // Create a link and trigger the download
+                // creating link and triggering download
                 const a = document.createElement("a");
                 a.href = URL.createObjectURL(blob);
                 a.download = "flashcards_backup.json";
-                document.body.appendChild(a); // Append the link to the body
-                a.click(); // Simulate click to trigger the download
-                document.body.removeChild(a); // Remove the link after triggering the download
+                document.body.appendChild(a); 
+                a.click(); // simulating click to trigger the download
+                document.body.removeChild(a);
             };
         }
         
@@ -237,20 +243,17 @@
             const reader = new FileReader();
 
             reader.onload = function(event) {
-                // Parse the file content to JSON
                 const data = JSON.parse(event.target.result);
 
-                // Delete the existing database and then recreate and import data
+                // deleting existing database, then initialising new one
                 deleteDatabase().then(() => {
                     console.log("Importing data...");
                     initIndexedDB().then(() => {
-                        // Now that the database is initialized, start the transaction
                         const transaction = db.transaction(['cards'], 'readwrite');
                         const store = transaction.objectStore('cards');
 
-                        // Iterate through the data array and add each item to the database
                         data.forEach(card => {
-                            store.add(card); // Add each card to the database
+                            store.add(card);
                         });
 
                         transaction.oncomplete = function() {
@@ -273,7 +276,7 @@
                 alert('Error reading the file');
             };
 
-            reader.readAsText(file); // Read the file content
+            reader.readAsText(file);
         }
     </script>
 </head>

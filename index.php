@@ -1,9 +1,10 @@
 <?php
 
-$deckDirectory = './decks';
-$easeFactor = 2.5;        // ease factor, i.e., factor with which to increase interval after good response
-$interval = 1;          // default interval
-$directionSwitch = 4;   // number of correct repetitions after which card direction can be changed
+$deckDirectory = './decks';   // relative path to search for deck json files
+$easeFactor = 2.5;            // ease factor, i.e., factor with which to increase interval after good response
+$hardEaseFactor = 1.2;        // ease factor for "hard" responses
+$interval = 1;                // default interval
+$directionSwitch = 4;         // number of correct repetitions after which card direction can be changed
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['decks'])) {
@@ -140,25 +141,25 @@ EOT;
     return $rehearseScript;
 }
 
-
 ?>
 
 
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <script>
     let db;
     let currentCard = null;
     let currentSide = null;
-        
+
+
     // reproducing rehearsal code here in rehearsal mode
 <?php
-if(isset($rehearseScript) && !empty($rehearseScript)) { 
-    echo '    const selectedDecks = JSON.parse(\'' . $selectedDecks . '\');' . PHP_EOL;
-    echo $rehearseScript . PHP_EOL;
-};
+    if(isset($rehearseScript) && !empty($rehearseScript)) { 
+        echo '    const selectedDecks = JSON.parse(\'' . $selectedDecks . '\');' . PHP_EOL;
+        echo $rehearseScript . PHP_EOL;
+    };
 ?>
+
 
     function initIndexedDB() {
         // initialising database
@@ -185,6 +186,7 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             };
         });
     }
+
 
     function loadCardsIntoDB(deckData) {
         // loading cards from currently selected decks into database
@@ -224,7 +226,8 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
         });
     }
     
-    function getDueCardsFromDB(selectedDecks) {
+    
+    function getDueCards(selectedDecks) {
         // getting cards from database that are in the selected decks and due for review
         return new Promise((resolve, reject) => {
             const transaction = db.transaction(['cards'], 'readonly');
@@ -256,10 +259,11 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
         });
     }
 
+
     function selectNextCard(selectedDecks) {
         // selecting next card for review
         return new Promise((resolve, reject) => {
-            getDueCardsFromDB(selectedDecks).then(dueCards => {
+            getDueCards(selectedDecks).then(dueCards => {
                 if (dueCards.length === 0) {
                     // no cards due
                     resolve(null);
@@ -277,6 +281,7 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             });
         });
     }
+
 
     function displayCard(card) {
         // showing card to user
@@ -317,11 +322,13 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             document.getElementById('responses').style.visibility = 'hidden';
         }
     }
+
     
     function playAudio(audioPath) {
         const audio = new Audio(audioPath);
         audio.play().catch(error => console.error("Error playing audio:", error));
     }
+    
     
     function showAnswer() {
         document.getElementById('answer').style.visibility = 'visible';
@@ -337,6 +344,7 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
         }
     }
     
+    
     function updateCardProgress(response) {
         if (!currentCard) return;
 
@@ -351,17 +359,17 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             case 'hard':
                 if (currentCard.repetition === 0) {
                     newReviewTime.setMinutes(newReviewTime.getMinutes() + 10);
-                    currentCard.interval = 1.3;
+                    currentCard.interval = <?php echo $hardEaseFactor; ?>;
                 } else {
                     newReviewTime.setDate(newReviewTime.getDate() + currentCard.interval);
-                    currentCard.interval = Math.round(currentCard.interval * 1.3 * 10) / 10;
+                    currentCard.interval = Math.round(currentCard.interval * <?php echo $hardEaseFactor; ?> * 10) / 10;
                 }
                 currentCard.repetition += 1;
                 break;
             case 'good':
                 if (currentCard.repetition === 0) {
                     newReviewTime.setMinutes(newReviewTime.getMinutes() + 10);
-                    currentCard.interval = 1.3;
+                    currentCard.interval = <?php echo $hardEaseFactor; ?>;
                 } else {
                     newReviewTime.setDate(newReviewTime.getDate() + currentCard.interval);
                     currentCard.interval = Math.round(currentCard.interval * currentCard.easeFactor * 10) / 10;
@@ -418,11 +426,6 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             color: var(--fg-color);
             background-color: var(--bg-color);
         }
-        
-        // div {
-            
-            // border: 1px solid red;
-        // }
         
         #main {
             width: 100%;
@@ -550,7 +553,6 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             }
         }
     </style>
-
 </head>
     
 <body>
