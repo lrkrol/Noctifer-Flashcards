@@ -1,7 +1,8 @@
 <?php
 
 $deckDirectory = './decks';
-$easeFactor = 2.5;      // ease factor, i.e., factor with which to increase interval after good response
+$easeFactor = 2.5;        // ease factor, i.e., factor with which to increase interval after good response
+$interval = 1;          // default interval
 $directionSwitch = 4;   // number of correct repetitions after which card direction can be changed
 
 
@@ -74,7 +75,14 @@ function rehearse($deckDirectory, $selectedDecks) {
                 $card['deckFilename'] = $deckFilename;
                 $card['allowDirectionChange'] = $allowDirectionChange;
                 if (!empty($card['audio'])) {
-                    $card['audio'] = str_replace(DIRECTORY_SEPARATOR, '/', $deckDirectory . $card['audio']);
+                    // sanitizing and fixing audio path
+                    $audioPath = $card['audio'];
+                    $audioPath = str_replace("../", "", $audioPath);
+                    $audioPath = str_replace("..\\", "", $audioPath);
+                    $audioPath = str_replace(DIRECTORY_SEPARATOR, '/', $deckDirectory . $audioPath);
+                    if (file_exists($audioPath)) {
+                        $card['audio'] = $audioPath;
+                    }
                 }
             }
             unset($card);
@@ -196,7 +204,7 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
                         store.add({
                             ...card,
                             repetition: 0,
-                            interval: 0,
+                            interval: <?php echo $interval; ?>,
                             easeFactor: <?php echo $easeFactor; ?>,
                             activeDirection: 'front',
                             nextReviewDate: now.getTime(),
@@ -236,6 +244,7 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
                     cursor.continue();
                 } else {
                     // resolving promise when there are no further entries
+                    console.log(dueCards);
                     resolve(dueCards);
                 }
             };
@@ -294,6 +303,9 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             if(currentSide === 'front') {
                 probeDiv.textContent = card.front;
                 answerDiv.textContent = card.back;
+                if (card.audio) {
+                    playAudio(card.audio);
+                }
             } else {
                 probeDiv.textContent = card.back;
                 answerDiv.textContent = card.front;
@@ -306,12 +318,23 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
         }
     }
     
+    function playAudio(audioPath) {
+        const audio = new Audio(audioPath);
+        audio.play().catch(error => console.error("Error playing audio:", error));
+    }
+    
     function showAnswer() {
         document.getElementById('answer').style.visibility = 'visible';
         document.getElementById('show').style.display = 'none';
         document.getElementById('again').style.display = 'inline-block';
         document.getElementById('hard').style.display = 'inline-block';
         document.getElementById('good').style.display = 'inline-block';
+        
+        console.log(currentSide);
+        
+        if(currentSide === 'back' && currentCard.audio) {
+            playAudio(currentCard.audio);
+        }
     }
     
     function updateCardProgress(response) {
@@ -321,22 +344,27 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
         switch (response) {
             case 'again':
                 newReviewTime.setMinutes(newReviewTime.getMinutes() + 1);
-                currentCard.interval = 1;
+                currentCard.interval = <?php echo $interval; ?>;
                 currentCard.repetition = 0;
                 currentCard.activeDirection = currentSide;
                 break;
             case 'hard':
-                newReviewTime.setDate(newReviewTime.getDate() + currentCard.interval);
-                currentCard.interval = currentCard.interval * 1.2;
+                if (currentCard.repetition === 0) {
+                    newReviewTime.setMinutes(newReviewTime.getMinutes() + 10);
+                    currentCard.interval = 1.3;
+                } else {
+                    newReviewTime.setDate(newReviewTime.getDate() + currentCard.interval);
+                    currentCard.interval = Math.round(currentCard.interval * 1.3 * 10) / 10;
+                }
                 currentCard.repetition += 1;
                 break;
             case 'good':
                 if (currentCard.repetition === 0) {
                     newReviewTime.setMinutes(newReviewTime.getMinutes() + 10);
-                    currentCard.interval = 1;
+                    currentCard.interval = 1.3;
                 } else {
                     newReviewTime.setDate(newReviewTime.getDate() + currentCard.interval);
-                    currentCard.interval = Math.round(currentCard.interval * currentCard.easeFactor);
+                    currentCard.interval = Math.round(currentCard.interval * currentCard.easeFactor * 10) / 10;
                 }
                 currentCard.repetition += 1;
                 break;
