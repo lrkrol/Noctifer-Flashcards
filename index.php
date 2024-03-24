@@ -1,9 +1,9 @@
 <?php
 
 $deckDirectory = './decks';   // relative path to search for deck json files
-$easeFactor = 2.5;            // ease factor, i.e., factor with which to increase interval after good response
+$easeFactor = 2.5;            // ease factor, i.e., factor with which to increase interval after "good" responses
 $hardEaseFactor = 1.2;        // ease factor for "hard" responses
-$interval = 1;                // default interval
+$interval = 1;                // default interval in days
 $directionSwitch = 4;         // number of correct repetitions after which card direction can be changed
 
 
@@ -48,7 +48,7 @@ function listDecks($deckDirectory) {
     }
     
     // producing html listing decks
-    $deckHTML = '<h1>Select decks for rehearsal</h1>' . PHP_EOL . '<form action="' . basename(__FILE__) . '" method="POST">' . PHP_EOL . '<fieldset>' . PHP_EOL;
+    $deckHTML = '<h1>Which decks would you like to rehearse?</h1>' . PHP_EOL . '<form action="' . basename(__FILE__) . '" method="POST">' . PHP_EOL . '<fieldset>' . PHP_EOL;
     foreach ($decks as $deck) {
         $deckHTML = $deckHTML . '    <div id="decks">'. PHP_EOL;
         $deckHTML = $deckHTML . '        <label><input type="checkbox" name="decks[]" value="' . htmlspecialchars($deck['filename']) . '" /><span>'. htmlspecialchars($deck['name']) . '<span></label>';
@@ -488,6 +488,7 @@ EOT;
         input[type=submit] {
             display: block;
             width: 100%;
+            font-size: large;
             color: var(--bg-color);
             background-color: var(--fg-color);
             border: none;
@@ -548,7 +549,7 @@ EOT;
             text-decoration-color: green;
         }
 
-        @media (min-width: 800px) {
+        @media (min-width: 810px) {
             #main{
                 width: 800px;
                 margin: 0 auto;
