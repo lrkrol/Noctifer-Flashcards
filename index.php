@@ -146,6 +146,7 @@ EOT;
 
 <!DOCTYPE html>
 <head>
+    <title>Flashcard training</title>
     <script>
     let db;
     let currentCard = null;
@@ -281,6 +282,16 @@ EOT;
             });
         });
     }
+    
+    function bb2html(text) {
+        let convertedText = text;
+        
+        convertedText = convertedText.replace(/\[b\](.*?)\[\/b\]/g, '<strong>$1</strong>');        
+        convertedText = convertedText.replace(/\[i\](.*?)\[\/i\]/g, '<em>$1</em>');        
+        convertedText = convertedText.replace(/\[u\](.*?)\[\/u\]/g, '<u>$1</u>');
+        
+        return convertedText;
+    }
 
 
     function displayCard(card) {
@@ -306,14 +317,14 @@ EOT;
             document.getElementById('good').style.display = 'none';
             
             if(currentSide === 'front') {
-                probeDiv.textContent = card.front;
-                answerDiv.textContent = card.back;
+                probeDiv.innerHTML = bb2html(card.front);
+                answerDiv.innerHTML = bb2html(card.back);
                 if (card.audio) {
                     playAudio(card.audio);
                 }
             } else {
-                probeDiv.textContent = card.back;
-                answerDiv.textContent = card.front;
+                probeDiv.innerHTML = bb2html(card.back);
+                answerDiv.innerHTML = bb2html(card.front);
             }
         } else {
             // no card to display
