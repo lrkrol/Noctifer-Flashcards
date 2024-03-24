@@ -7,7 +7,7 @@ $deckDirectory = __DIR__ . DIRECTORY_SEPARATOR . 'decks';
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['decks'])) {
     // POST data indicates decks have been selected; switching to rehearse mode
     $selectedDecks = json_encode($_POST['decks'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
-    $rehearseScript = rehearse($deckDirectory, $_POST['decks']);
+    $rehearseScript = rehearse($deckDirectory, array_map(function($deck) {return preg_replace('/[^a-zA-Z0-9_\-\.]+/', '', $deck);}, $_POST['decks']));
     $rehearseHTML = <<<EOL
         <div id="probe"></div>
         <div id="answer"></div>
@@ -94,6 +94,36 @@ function rehearse($deckDirectory, $selectedDecks) {
                 selectNextCard(selectedDecks).then(nextCard => {displayCard(nextCard);})
             });
         });
+    });
+    
+    document.addEventListener('keydown', function(event) {
+        switch(event.code) {
+            case 'Space':
+                event.preventDefault(); // Prevent the default action (scrolling) when pressing space
+                showAnswer();
+                break;
+            case 'Digit1':
+            case 'Numpad1':
+                event.preventDefault();
+                updateCardProgress('again').then(() => { 
+                    selectNextCard(selectedDecks).then(displayCard); 
+                });
+                break;
+            case 'Digit2':
+            case 'Numpad2':
+                event.preventDefault();
+                updateCardProgress('hard').then(() => { 
+                    selectNextCard(selectedDecks).then(displayCard); 
+                });
+                break;
+            case 'Digit3':
+            case 'Numpad3':
+                event.preventDefault();
+                updateCardProgress('good').then(() => { 
+                    selectNextCard(selectedDecks).then(displayCard); 
+                });
+                break;
+        }
     });
     
 EOT;
@@ -189,7 +219,7 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
         return new Promise((resolve, reject) => {
             const transaction = db.transaction(['cards'], 'readonly');
             const store = transaction.objectStore('cards');
-            const now = Date.now();
+            const dueDate = Date.now() + (15 * 60 * 1000);
             const dueCards = [];
 
             const request = store.openCursor();
@@ -198,7 +228,7 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
                 if (cursor) {
                     // pushing all due cards
                     let card = cursor.value;
-                    if (selectedDecks.includes(card.deckFilename) && card.nextReviewDate <= now) {
+                    if (selectedDecks.includes(card.deckFilename) && card.nextReviewDate <= dueDate) {
                         dueCards.push(card);
                     }
                     cursor.continue();
@@ -343,6 +373,11 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             background-color: var(--bg-color);
         }
         
+        // div {
+            
+            // border: 1px solid red;
+        // }
+        
         #main {
             width: 100%;
             box-sizing: border-box;
@@ -422,6 +457,8 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             width: inherit;
             position: fixed;
             bottom: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
             font-size: xx-large;
         }
@@ -430,6 +467,10 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             flex: 1;
             padding: .5em 0;
             cursor: pointer;
+        }
+        
+        #responses > div:hover {
+            color: var(--fg-highlight);
         }
         
         #again {
@@ -447,7 +488,7 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             text-decoration-color: green;
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 800px) {
             #main{
                 width: 800px;
                 margin: 0 auto;
