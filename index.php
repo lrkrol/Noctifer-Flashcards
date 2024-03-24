@@ -75,14 +75,24 @@ function rehearse($deckDirectory, $selectedDecks) {
                 $card['id'] = $deckFilename . '#' . $card['id'];
                 $card['deckFilename'] = $deckFilename;
                 $card['allowDirectionChange'] = $allowDirectionChange;
-                if (!empty($card['audio'])) {
+                if (!empty($card['audioFront'])) {
                     // sanitizing and fixing audio path
-                    $audioPath = $card['audio'];
+                    $audioPath = $card['audioFront'];
                     $audioPath = str_replace("../", "", $audioPath);
                     $audioPath = str_replace("..\\", "", $audioPath);
                     $audioPath = str_replace(DIRECTORY_SEPARATOR, '/', $deckDirectory . $audioPath);
                     if (file_exists($audioPath)) {
-                        $card['audio'] = $audioPath;
+                        $card['audioFront'] = $audioPath;
+                    }
+                }
+                if (!empty($card['audioBack'])) {
+                    // sanitizing and fixing audio path
+                    $audioPath = $card['audioBack'];
+                    $audioPath = str_replace("../", "", $audioPath);
+                    $audioPath = str_replace("..\\", "", $audioPath);
+                    $audioPath = str_replace(DIRECTORY_SEPARATOR, '/', $deckDirectory . $audioPath);
+                    if (file_exists($audioPath)) {
+                        $card['audioBack'] = $audioPath;
                     }
                 }
             }
@@ -248,7 +258,6 @@ EOT;
                     cursor.continue();
                 } else {
                     // resolving promise when there are no further entries
-                    console.log(dueCards);
                     resolve(dueCards);
                 }
             };
@@ -319,12 +328,15 @@ EOT;
             if(currentSide === 'front') {
                 probeDiv.innerHTML = bb2html(card.front);
                 answerDiv.innerHTML = bb2html(card.back);
-                if (card.audio) {
-                    playAudio(card.audio);
+                if (card.audioFront) {
+                    playAudio(card.audioFront);
                 }
             } else {
                 probeDiv.innerHTML = bb2html(card.back);
                 answerDiv.innerHTML = bb2html(card.front);
+                if (card.audioBack) {
+                    playAudio(card.audioBack);
+                }
             }
         } else {
             // no card to display
@@ -348,10 +360,10 @@ EOT;
         document.getElementById('hard').style.display = 'inline-block';
         document.getElementById('good').style.display = 'inline-block';
         
-        console.log(currentSide);
-        
-        if(currentSide === 'back' && currentCard.audio) {
-            playAudio(currentCard.audio);
+        if(currentSide === 'back' && currentCard.audioFront) {
+            playAudio(currentCard.audioFront);
+        } else if(currentSide === 'front' && currentCard.audioBack) {
+            playAudio(currentCard.audioBack);
         }
     }
     
@@ -528,6 +540,7 @@ EOT;
             flex: 1;
             padding: .5em 0;
             cursor: pointer;
+            display: none;
         }
         
         #responses > div:hover {

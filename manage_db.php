@@ -294,10 +294,10 @@
             <tbody>
             </tbody>
         </table>
-        <button onclick="deleteDatabase()">Delete Database</button>
         <button onclick="exportDatabase()">Export Database</button>
         <input type="file" id="fileInput" />
         <button onclick="importDatabase()">Import Database</button>
+        <button onclick="deleteDatabase()">Delete Database</button>
     </fieldset>
 </body>
 </html>
