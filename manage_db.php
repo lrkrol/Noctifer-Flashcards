@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Manage Database</title>
+    <title>Flashcard database</title>
     <style>
         body {
             --bg-color: #fbf5f3;
@@ -123,7 +123,12 @@
                     // inserting cell for each value
                     Object.entries(card).forEach(([key, value]) => {
                         const cell = row.insertCell();
-                        cell.textContent = value;
+                        if (Number.isInteger(value) && value > 1000000) {
+                            // this is probably a timestamp; converting
+                            cell.textContent = new Date(value).toISOString().split('.')[0];
+                        } else {
+                            cell.textContent = value;
+                        };
                     });
 
                     // inserting cell for delete button
@@ -144,14 +149,13 @@
 
             Object.keys(sampleCard).forEach(key => {
                 const headerCell = document.createElement('th');
-                headerCell.textContent = key.charAt(0).toUpperCase() + key.slice(1); // Capitalize the key for the header
+                headerCell.textContent = key;
                 headerRow.appendChild(headerCell);
             });
 
             // adding header for buttons
             if (!sampleCard.hasOwnProperty('action')) {
                 const actionHeaderCell = document.createElement('th');
-                actionHeaderCell.textContent = 'Action';
                 headerRow.appendChild(actionHeaderCell);
             }
         };
@@ -281,7 +285,7 @@
     </script>
 </head>
 <body>
-    <h1>Database Management</h1>
+    <h1>Flashcard database management</h1>
     <fieldset>
         <legend>Flashcards</legend>
         <table id="cardsTable">
