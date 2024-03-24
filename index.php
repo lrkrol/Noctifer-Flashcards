@@ -332,10 +332,10 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
     <noscript>Unfortunately, this page requires JavaScript, which your browser does not support.</noscript>
     <style>
         body {
-            --bg-color: #eee;
-            --fg-color: #466;
+            --bg-color: #fbf5f3;
+            --fg-color: #386641;
             --bg-highlight: #fff;
-            --fg-highlight: #000;
+            --fg-highlight: #6a994e;
             
             font-size: xxx-large;
             font-family: sans-serif;
@@ -368,7 +368,7 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
         input[type=checkbox] + span {
             cursor: pointer;
             display: block;
-            margin: 5px 0;
+            margin: 10px 0;
         }
         
         input[type=checkbox]:checked + span {
@@ -456,10 +456,10 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
         
         @media (prefers-color-scheme: dark) {
             body {
-                --bg-color: #0a0a0a;
-                --fg-color: #cdd;
-                --bg-highlight: #000;
-                --fg-highlight: #fff;
+                --bg-color: #000000;
+                --fg-color: #e5e5e5;
+                --bg-highlight: #181d27;
+                --fg-highlight: #a7c957;
             }
         }
     </style>

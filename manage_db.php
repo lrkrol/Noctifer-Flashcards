@@ -5,10 +5,10 @@
     <title>Manage Database</title>
     <style>
         body {
-            --bg-color: #eee;
-            --fg-color: #466;
+            --bg-color: #fbf5f3;
+            --fg-color: #386641;
             --bg-highlight: #fff;
-            --fg-highlight: #000;
+            --fg-highlight: #6a994e;
             
             font-family: sans-serif;
             color: var(--fg-color);
@@ -59,16 +59,16 @@
             padding: 5px 10px;
         }
         
-        input[type=submit]:hover {
+        button:hover {
             background-color: var(--fg-highlight);
         }
         
         @media (prefers-color-scheme: dark) {
             body {
-                --bg-color: #0a0a0a;
-                --fg-color: #cdd;
-                --bg-highlight: #000;
-                --fg-highlight: #fff;
+                --bg-color: #000000;
+                --fg-color: #e5e5e5;
+                --bg-highlight: #181d27;
+                --fg-highlight: #a7c957;
             }
         }
     </style>
