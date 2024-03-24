@@ -1,7 +1,8 @@
 <?php
 
-
-$deckDirectory = __DIR__ . DIRECTORY_SEPARATOR . 'decks';
+$deckDirectory = './decks';
+$easeFactor = 2.5;      // ease factor, i.e., factor with which to increase interval after good response
+$directionSwitch = 4;   // number of correct repetitions after which card direction can be changed
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['decks'])) {
@@ -141,6 +142,7 @@ EOT;
     <script>
     let db;
     let currentCard = null;
+    let currentSide = null;
         
     // reproducing rehearsal code here in rehearsal mode
 <?php
@@ -195,7 +197,7 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
                             ...card,
                             repetition: 0,
                             interval: 0,
-                            easeFactor: 2.5,
+                            easeFactor: <?php echo $easeFactor; ?>,
                             activeDirection: 'front',
                             nextReviewDate: now.getTime(),
                         });
@@ -274,9 +276,9 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             
             // selecting which side to present first
             if (card.activeDirection === 'both') {
-                currentDirection = Math.random() < 0.5 ? 'front' : 'back';
+                currentSide = Math.random() < 0.5 ? 'front' : 'back';
             } else {
-                currentDirection = card.activeDirection;
+                currentSide = card.activeDirection;
             }
 
             // updating html to display card            
@@ -289,7 +291,7 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
             document.getElementById('hard').style.display = 'none';
             document.getElementById('good').style.display = 'none';
             
-            if(currentDirection === 'front') {
+            if(currentSide === 'front') {
                 probeDiv.textContent = card.front;
                 answerDiv.textContent = card.back;
             } else {
@@ -313,17 +315,18 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
     }
     
     function updateCardProgress(response) {
-        if (!currentCard) return; // Ensure there's a card to update
+        if (!currentCard) return;
 
         const newReviewTime = new Date();
         switch (response) {
             case 'again':
                 newReviewTime.setMinutes(newReviewTime.getMinutes() + 1);
-                currentCard.interval = 1; // setting interval to 1 day
+                currentCard.interval = 1;
                 currentCard.repetition = 0;
+                currentCard.activeDirection = currentSide;
                 break;
             case 'hard':
-                newReviewTime.setDate(newReviewTime.getDate() + currentCard.interval); // Update nextReviewDate based on new interval
+                newReviewTime.setDate(newReviewTime.getDate() + currentCard.interval);
                 currentCard.interval = currentCard.interval * 1.2;
                 currentCard.repetition += 1;
                 break;
@@ -339,7 +342,22 @@ if(isset($rehearseScript) && !empty($rehearseScript)) {
                 break;
         }
         
-        currentCard.nextReviewDate = newReviewTime.getTime(); // Convert nextReviewDate to timestamp
+        currentCard.nextReviewDate = newReviewTime.getTime();
+        
+        // changing activeDirection after a number of successful repetitions, if allowed
+        if (currentCard.allowDirectionChange && currentCard.repetition % <?php echo $directionSwitch; ?> === 0 && currentCard.repetition > 0) {
+            switch (currentCard.activeDirection) {
+                case 'front':
+                    currentCard.activeDirection = 'back';
+                    break;
+                case 'back':
+                    currentCard.activeDirection = 'both';
+                    break;
+                case 'both':
+                    // no change required if already both
+                    break;
+            }
+        }
 
         // saving updated card back into the database
         return new Promise((resolve, reject) => {
