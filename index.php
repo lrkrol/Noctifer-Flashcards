@@ -444,24 +444,24 @@ EOT;
             --bg-highlight: #fff;
             --fg-highlight: #6a994e;
             
-            font-size: xxx-large;
             font-family: sans-serif;
             color: var(--fg-color);
             background-color: var(--bg-color);
         }
         
         #main {
-            width: 100%;
             box-sizing: border-box;
+            width: 800px;
+            margin: 0 auto;
             padding: 20px;
         }
         
         h1 {
-            font-size: x-large;
+            font-size: xx-large;
         }
         
         fieldset {
-            font-size: large;
+            font-size: x-large;
             border: 1px solid var(--fg-color);
             background-color: var(--bg-highlight);
             border-radius: 5px;
@@ -500,7 +500,7 @@ EOT;
         input[type=submit] {
             display: block;
             width: 100%;
-            font-size: large;
+            font-size: x-large;
             color: var(--bg-color);
             background-color: var(--fg-color);
             border: none;
@@ -514,14 +514,13 @@ EOT;
             background-color: var(--fg-highlight);
         }
         
-        #probe {
+        #probe, #answer {
+            font-size: 56px;
             text-align: center;
             padding: 2em 0; 
         }
         
         #answer {
-            text-align: center;
-            padding: 2em 0; 
             border-top: 1px solid grey;
         }
         
@@ -562,10 +561,17 @@ EOT;
             text-decoration-color: green;
         }
 
-        @media (min-width: 810px) {
+        @media (orientation: portrait) {
             #main{
-                width: 800px;
-                margin: 0 auto;
+                width: 100%;
+            }
+            
+            h1, fieldset, input[type=submit], #responses {
+                font-size: 48px;
+            }
+            
+            #probe, #answer {
+                font-size: 72px;
             }
         }
         

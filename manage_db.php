@@ -3,69 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Flashcard database</title>
-    <style>
-        body {
-            --bg-color: #fbf5f3;
-            --fg-color: #386641;
-            --bg-highlight: #fff;
-            --fg-highlight: #6a994e;
-            
-            font-family: sans-serif;
-            color: var(--fg-color);
-            background-color: var(--bg-color);
-        }
-        
-        h1 {
-            font-size: x-large;
-        }
-        
-        fieldset {
-            border: 1px solid var(--fg-color);
-            background-color: var(--bg-highlight);
-            border-radius: 5px;
-            margin: 0;
-        }
-        
-        table {
-            border-collapse: collapse;
-            margin-bottom: 10px
-        }
-        
-        th, td {
-            padding: 5px 10px;
-        }
-        
-        tr:hover {
-            color: var(--fg-highlight);
-        }
-        
-        button, input {
-            display: inline-block;
-            color: var(--bg-color);
-            background-color: var(--fg-color);
-            border: none;
-            border-radius: 5px;
-            padding: 2px 10px;
-            cursor: pointer;
-        }
-        
-        button {
-            padding: 5px 10px;
-        }
-        
-        button:hover {
-            background-color: var(--fg-highlight);
-        }
-        
-        @media (prefers-color-scheme: dark) {
-            body {
-                --bg-color: #000000;
-                --fg-color: #e5e5e5;
-                --bg-highlight: #181d27;
-                --fg-highlight: #a7c957;
-            }
-        }
-    </style>
     <script>
         let db;
 
@@ -283,6 +220,69 @@
             reader.readAsText(file);
         }
     </script>
+    <style>
+        body {
+            --bg-color: #fbf5f3;
+            --fg-color: #386641;
+            --bg-highlight: #fff;
+            --fg-highlight: #6a994e;
+            
+            font-family: sans-serif;
+            color: var(--fg-color);
+            background-color: var(--bg-color);
+        }
+        
+        h1 {
+            font-size: x-large;
+        }
+        
+        fieldset {
+            border: 1px solid var(--fg-color);
+            background-color: var(--bg-highlight);
+            border-radius: 5px;
+            margin: 0;
+        }
+        
+        table {
+            border-collapse: collapse;
+            margin-bottom: 10px
+        }
+        
+        th, td {
+            padding: 5px 10px;
+        }
+        
+        tr:hover {
+            color: var(--fg-highlight);
+        }
+        
+        button, input {
+            display: inline-block;
+            color: var(--bg-color);
+            background-color: var(--fg-color);
+            border: none;
+            border-radius: 5px;
+            padding: 2px 10px;
+            cursor: pointer;
+        }
+        
+        button {
+            padding: 5px 10px;
+        }
+        
+        button:hover {
+            background-color: var(--fg-highlight);
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            body {
+                --bg-color: #000000;
+                --fg-color: #e5e5e5;
+                --bg-highlight: #181d27;
+                --fg-highlight: #a7c957;
+            }
+        }
+    </style>
 </head>
 <body>
     <h1>Flashcard database management</h1>
