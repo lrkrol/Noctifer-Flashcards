@@ -1,23 +1,51 @@
 {
     "header": {
-        "name": "Persian Food",
-        "description": "Discover the names of various Persian foods.",
+        "name": "Persian food",
+        "description": "Various Persian words related to food. Pronunciations by Forvo.",
         "allowDirectionChange": true
     },
     "cards": [
         {
             "id": "1",
             "front": "چای",
-            "back": "Tea",
+            "back": "tea",
             "audioFront": "/persian_food/چای.mp3",
             "audioBack": "/persian_food/tea.mp3"
         },
         {
             "id": "2",
             "front": "برنج",
-            "back": "Rice",
+            "back": "rice",
             "audioFront": "/persian_food/برنج.mp3",
             "audioBack": "/persian_food/rice.mp3"
+        },
+        {
+            "id": "3",
+            "front": "بادِمجان",
+            "back": "eggplant",
+            "audioFront": "/persian_food/بادمجان.mp3",
+            "audioBack": "/persian_food/eggplant.mp3"
+        },
+        {
+            "id": "4",
+            "front": "غَذا",
+            "back": "food",
+            "audioFront": "/persian_food/غذا.mp3",
+            "audioBack": "/persian_food/food.mp3"
+        },
+        {
+            "id": "5",
+            "front": "نان",
+            "back": "bread",
+            "audioFront": "/persian_food/نان.mp3",
+            "audioBack": "/persian_food/bread.mp3"
+        },
+        {
+            "id": "6",
+            "front": "گوشت",
+            "back": "meat",
+            "audioFront": "/persian_food/گوشت.mp3",
+            "audioBack": "/persian_food/meat.mp3"
         }
     ]
 }

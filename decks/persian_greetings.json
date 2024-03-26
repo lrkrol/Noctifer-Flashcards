@@ -1,0 +1,44 @@
+{
+    "header": {
+        "name": "Persian greetings",
+        "description": "Basic Persian greeetings. Pronunciations by Forvo.",
+        "allowDirectionChange": true
+    },
+    "cards": [
+        {
+            "id": "1",
+            "front": "سَلام",
+            "back": "hello",
+            "audioFront": "/persian_greetings/سلام.mp3",
+            "audioBack": "/persian_greetings/hello.mp3"
+        },
+        {
+            "id": "2",
+            "front": "خُداحافِظ",
+            "back": "goodbye",
+            "audioFront": "/persian_greetings/خداحافظ.mp3",
+            "audioBack": "/persian_greetings/goodbye.mp3"
+        },
+        {
+            "id": "3",
+            "front": "خُدا نِگَهدار",
+            "back": "farewell",
+            "audioFront": "/persian_greetings/خدا_نگهدار.mp3",
+            "audioBack": "/persian_greetings/farewell.mp3"
+        },
+        {
+            "id": "4",
+            "front": "صُبح بِخِیر",
+            "back": "good morning",
+            "audioFront": "/persian_greetings/صبح_بخیر.mp3",
+            "audioBack": "/persian_greetings/good_morning.mp3"
+        },
+        {
+            "id": "5",
+            "front": "شَب بِخِیر",
+            "back": "good night",
+            "audioFront": "/persian_greetings/شب_بخیر.mp3",
+            "audioBack": "/persian_greetings/good_night.mp3"
+        }
+    ]
+}
