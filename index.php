@@ -482,8 +482,6 @@ EOT;
             color: var(--bg-highlight);
         }
         
-        input[type=checkbox] + span:hover,
-        input[type=checkbox] + span:hover:before,
         input[type=checkbox]:checked + span,
         input[type=checkbox]:checked + span:before {
             color: var(--fg-highlight);
@@ -569,8 +567,19 @@ EOT;
                 font-size: 48px;
             }
             
+            input[type=checkbox] + span {
+                margin: 20px 0;
+            }
+            
             #probe, #answer {
                 font-size: 72px;
+            }
+        }
+
+        @media (orientation: landscape) {            
+            input[type=checkbox] + span:hover,
+            input[type=checkbox] + span:hover:before {
+                color: var(--fg-highlight);
             }
         }
         
