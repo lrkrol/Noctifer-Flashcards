@@ -50,11 +50,11 @@ function listDecks($deckDirectory) {
     // producing html listing decks
     $deckHTML = '<h1>Which decks would you like to rehearse?</h1>' . PHP_EOL . '<form action="' . basename(__FILE__) . '" method="POST">' . PHP_EOL . '<fieldset>' . PHP_EOL;
     foreach ($decks as $deck) {
-        $deckHTML = $deckHTML . '    <div id="decks">'. PHP_EOL;
-        $deckHTML = $deckHTML . '        <label><input type="checkbox" name="decks[]" value="' . htmlspecialchars($deck['filename']) . '" /><span>'. htmlspecialchars($deck['name']) . '<span></label>';
+        $deckHTML = $deckHTML . '    <div>'. PHP_EOL;
+        $deckHTML = $deckHTML . '        <label><input type="checkbox" name="decks[]" value="' . htmlspecialchars($deck['filename']) . '"><span>'. htmlspecialchars($deck['name']) . '</span></label>';
         $deckHTML = $deckHTML . '    </div>'. PHP_EOL;
     }
-    $deckHTML = $deckHTML . '</fieldset>' . PHP_EOL . '<input type="submit" value="Start rehearsal" />' . PHP_EOL . '</form>'. PHP_EOL;
+    $deckHTML = $deckHTML . '</fieldset>' . PHP_EOL . '<input type="submit" value="Start rehearsal">' . PHP_EOL . '</form>'. PHP_EOL;
     
     return $deckHTML;
 }
@@ -152,9 +152,8 @@ EOT;
 }
 
 ?>
-
-
-<!DOCTYPE html>
+<!doctype html>
+<html lang="en">
 <head>
     <title>Flashcard training</title>
     <script>
@@ -436,13 +435,12 @@ EOT;
     }
     
     </script>
-    <noscript>Unfortunately, this page requires JavaScript, which your browser does not support.</noscript>
     <style>
         body {
-            --bg-color: #fbf5f3;
-            --fg-color: #386641;
+            --bg-color: #f6fafc;
+            --fg-color: #0a2e3c;
             --bg-highlight: #fff;
-            --fg-highlight: #6a994e;
+            --fg-highlight: #086086;
             
             font-family: sans-serif;
             color: var(--fg-color);
@@ -478,27 +476,24 @@ EOT;
             margin: 10px 0;
         }
         
-        input[type=checkbox]:checked + span {
-            color: var(--fg-highlight);
-        }
-        
-        input[type=checkbox] + span:hover {
-            color: var(--fg-highlight);
-        }
-        
         input[type=checkbox] + span:before {
             content: "\2714";
             margin-right: 5px;
             color: var(--bg-highlight);
         }
         
+        input[type=checkbox] + span:hover,
+        input[type=checkbox] + span:hover:before,
+        input[type=checkbox]:checked + span,
         input[type=checkbox]:checked + span:before {
-            content: "\2714";
             color: var(--fg-highlight);
         }
         
+        input[type=checkbox] + span:active {
+            opacity: 0.5;
+        }
+        
         input[type=submit] {
-            display: block;
             width: 100%;
             font-size: x-large;
             color: var(--bg-color);
@@ -546,6 +541,10 @@ EOT;
             color: var(--fg-highlight);
         }
         
+        #responses > div:active {
+            opacity: 0.5;
+        }
+        
         #again {
             text-decoration: underline;
             text-decoration-color: darkred;
@@ -576,17 +575,18 @@ EOT;
         }
         
         @media (prefers-color-scheme: dark) {
-            body {
+            body {                
                 --bg-color: #000000;
-                --fg-color: #e5e5e5;
-                --bg-highlight: #181d27;
-                --fg-highlight: #a7c957;
+                --fg-color: #deeef4;
+                --bg-highlight: #01161e;
+                --fg-highlight: #ffffff;
             }
         }
     </style>
 </head>
     
 <body>
+    <noscript>Unfortunately, this page requires JavaScript, which your browser does not support.</noscript>
     <div id="main">
 <?php 
     if(isset($deckHTML) && !empty($deckHTML)) { echo $deckHTML; }

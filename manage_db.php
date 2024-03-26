@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -222,10 +222,10 @@
     </script>
     <style>
         body {
-            --bg-color: #fbf5f3;
-            --fg-color: #386641;
+            --bg-color: #f6fafc;
+            --fg-color: #0a2e3c;
             --bg-highlight: #fff;
-            --fg-highlight: #6a994e;
+            --fg-highlight: #086086;
             
             font-family: sans-serif;
             color: var(--fg-color);
@@ -254,6 +254,7 @@
         
         tr:hover {
             color: var(--fg-highlight);
+            background-color: var(--bg-color);
         }
         
         button, input {
@@ -277,9 +278,9 @@
         @media (prefers-color-scheme: dark) {
             body {
                 --bg-color: #000000;
-                --fg-color: #e5e5e5;
-                --bg-highlight: #181d27;
-                --fg-highlight: #a7c957;
+                --fg-color: #deeef4;
+                --bg-highlight: #01161e;
+                --fg-highlight: #ffffff;
             }
         }
     </style>
@@ -295,7 +296,7 @@
             </tbody>
         </table>
         <button onclick="exportDatabase()">Export Database</button>
-        <input type="file" id="fileInput" />
+        <input type="file" id="fileInput">
         <button onclick="importDatabase()">Import Database</button>
         <button onclick="deleteDatabase()">Delete Database</button>
     </fieldset>
