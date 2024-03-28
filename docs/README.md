@@ -65,7 +65,7 @@ Take, for example, the _Persian greetings_ deck used in the demo, trimmed to its
 
 The header's `name` property is shown at deck selection; `description` is currently not referenced but can be used for relevant information, such as licensing indicated here. `allowDirectionChange` indicates whether or not the cards should always be probed using their front side to the user, with the answer contained on the back side (`false`), or if it should be allowed to also show the back side furst for the user to then guess the corresponding front side (`true`).
 
-For each card, `id`, `front`, and `back` are mandatory. `audioFront` and `audioBack` are optional. The root `/` here refers to the same directory that the deck JSON is in. `front` and `back` should contain just text, but support BBCode `[b]bold[/b]`, `[i]italic[/i]`, and `[underline]` for markup.
+For each card, `id`, `front`, and `back` are mandatory. `audioFront` and `audioBack` are optional. The root `/` here refers to the same directory that the deck JSON is in. `front` and `back` should contain just text, but support BBCode `[b]bold[/b]`, `[i]italic[/i]`, and `[u]underline[/u]` for markup.
 
 
 ### Learning algorithm
