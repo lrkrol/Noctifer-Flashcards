@@ -1,6 +1,6 @@
 <?php
 
-$deckDirectory = './sampledecks';   // relative path to search for deck json files
+$deckDirectory = './decks';   // relative path to search for deck json files
 $easeFactor = 2.5;            // default ease factor
 $interval = 1;                // default interval in days
 $directionSwitch = 3;         // number of correct repetitions after which card direction can be changed
