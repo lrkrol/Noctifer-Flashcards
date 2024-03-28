@@ -1,6 +1,6 @@
 <?php
 
-$deckDirectory = './decks';   // relative path to search for deck json files
+$deckDirectory = './sampledecks';   // relative path to search for deck json files
 $easeFactor = 2.5;            // default ease factor
 $interval = 1;                // default interval in days
 $directionSwitch = 3;         // number of correct repetitions after which card direction can be changed
@@ -404,10 +404,13 @@ EOT;
                     break;
             }
         }
+        
+        easeFactor = Math.round((currentCard.easeFactor + (0.1-(5-quality)*(0.08+(5-quality)*0.02))) * 100) / 100;
+        if (easeFactor < 1.3) { easeFactor = 1.3; }
 
         currentCard.repetition += 1;
         currentCard.nextReviewDate = newReviewTime.getTime();
-        currentCard.easeFactor = currentCard.easeFactor + (0.1-(5-quality)*(0.08+(5-quality)*0.02));
+        currentCard.easeFactor = easeFactor;
 
         // saving updated card back into the database
         return new Promise((resolve, reject) => {
