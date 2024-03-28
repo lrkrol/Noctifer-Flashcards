@@ -76,3 +76,10 @@ The learning algorithm is a simplified version of [SM-2](https://en.wikipedia.or
 * A novel word (i.e., `repetition = 0`) is always repeated at least once more in the same session regardless of answer (i.e., next `interval` is 10 minutes).
 * After a novel word was correctly guessed (i.e., `repetition = 1`), it starts first with the default `interval` (by default 1 day). Only after the second correct repetition is `easeFactor` applied to `interval`.
 * Since cards are only defined once and not separated into front-back and back-front notes, an additional direction change is implemented. After, by default, 3 correct repetitions, cards are switched from front-back to back-front, and the next review is scheduled after 1 day. After another 3 correct repetitions, front-back and back-front are both allowed and one is selected at random. 
+
+
+### Database management
+
+Flashcards are loaded into the local IndexedDB as soon as rehearsal starts. Cards that are already in the database are not overwritten. The database can be inspected via `manage_db.php`. Here, individual cards can be deleted. This will reset their progress: They will be re-loaded with default values when their deck is next selected for rehearsal. The database can also be deleted as a whole, to clear local storage. Exporting the database saves the entire databases's contents to a JSON file, which can also be imported again via this same page. This allows progress to be backed up and transferred to a different browser.
+
+<img src="./screenshot-manage-dark.png">
