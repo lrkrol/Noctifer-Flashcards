@@ -4,7 +4,9 @@ Noctifer Flashcards is a web-based flashcards application contained within a sin
 
 The [live demo](https://flashcards.lrk.tools/demo) has two decks, showing unicode and audio support.
 
-<img src="./docs/screenshot-select-dark.png" width="20%">
+<p align="center">
+    <img src="./screenshot-select-dark.png" width="23%"> <img src="./screenshot-rehearse-dark.png" width="23%"> <img src="./screenshot-select-light.png" width="23%"> <img src="./screenshot-rehearse-light.png" width="23%">
+</p>
 
 ## Features
 
@@ -74,5 +76,3 @@ The learning algorithm is a simplified version of [SM-2](https://en.wikipedia.or
 * A novel word (i.e., `repetition = 0`) is always repeated at least once more in the same session regardless of answer (i.e., next `interval` is 10 minutes).
 * After a novel word was correctly guessed (i.e., `repetition = 1`), it starts first with the default `interval` (by default 1 day). Only after the second correct repetition is `easeFactor` applied to `interval`.
 * Since cards are only defined once and not separated into front-back and back-front notes, an additional direction change is implemented. After, by default, 3 correct repetitions, cards are switched from front-back to back-front, and the next review is scheduled after 1 day. After another 3 correct repetitions, front-back and back-front are both allowed and one is selected at random. 
-
-This can easily be extended to the full SM-2 algorithm by adding the respective response options.
