@@ -278,9 +278,9 @@ EOT;
                     return;
                 }
 
-                // finding card with earliest nextReviewDate, selecting random in case there's multiple
-                const earliestReviewDate = Math.min(...dueCards.map(card => card.nextReviewDate));
-                const earliestDueCards = dueCards.filter(card => card.nextReviewDate === earliestReviewDate);
+                // selecting at random from 10 earliest-due cards
+                dueCards.sort((a, b) => a.nextReviewDate - b.nextReviewDate);
+                const earliestDueCards = dueCards.slice(0, Math.min(10, dueCards.length));
                 const cardToShow = earliestDueCards[Math.floor(Math.random() * earliestDueCards.length)];
 
                 resolve(cardToShow);
