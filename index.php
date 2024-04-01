@@ -4,6 +4,7 @@ $deckDirectory = './decks';   // relative path to search for deck json files
 $easeFactor = 2.5;            // default ease factor
 $interval = 1;                // default interval in days
 $directionSwitch = 3;         // number of correct repetitions after which card direction can be changed
+$pickFromEarliest = 25;       // next card will be selected randomly from the earliest X due cards
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['decks'])) {
@@ -280,7 +281,7 @@ EOT;
 
                 // selecting at random from 10 earliest-due cards
                 dueCards.sort((a, b) => a.nextReviewDate - b.nextReviewDate);
-                const earliestDueCards = dueCards.slice(0, Math.min(10, dueCards.length));
+                const earliestDueCards = dueCards.slice(0, Math.min(<?php echo $pickFromEarliest; ?>, dueCards.length));
                 const cardToShow = earliestDueCards[Math.floor(Math.random() * earliestDueCards.length)];
 
                 resolve(cardToShow);
