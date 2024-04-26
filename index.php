@@ -7,6 +7,35 @@ $directionSwitch = 3;         // number of correct repetitions after which card 
 $pickFromEarliest = 25;       // next card will be selected randomly from the earliest X due cards
 
 
+/*
+MIT License
+
+Copyright (c) 2024 Laurens R. Krol
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Changelog
+2024-04-26 lrk
+- Made playing audio stop before playing new audio
+*/
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['decks'])) {
     // POST data indicates decks have been selected; switching to rehearse mode
     $selectedDecks = json_encode($_POST['decks'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
@@ -160,6 +189,7 @@ EOT;
     let db;
     let currentCard = null;
     let currentSide = null;
+    let currentAudio = null;
 
 
     // reproducing rehearsal code here in rehearsal mode
@@ -324,6 +354,7 @@ EOT;
             document.getElementById('hard').style.display = 'none';
             document.getElementById('good').style.display = 'none';
 
+            stopAudio();
             if(currentSide === 'front') {
                 probeDiv.innerHTML = bb2html(card.front);
                 answerDiv.innerHTML = bb2html(card.back);
@@ -347,8 +378,16 @@ EOT;
 
 
     function playAudio(audioPath) {
-        const audio = new Audio(audioPath);
-        audio.play().catch(error => console.error("Error playing audio:", error));
+        currentAudio = new Audio(audioPath);
+        currentAudio.play().catch(error => console.error("Error playing audio:", error));
+    }
+
+
+    function stopAudio() {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
     }
 
 
@@ -359,6 +398,7 @@ EOT;
         document.getElementById('hard').style.display = 'inline-block';
         document.getElementById('good').style.display = 'inline-block';
 
+        stopAudio();
         if(currentSide === 'back' && currentCard.audioFront) {
             playAudio(currentCard.audioFront);
         } else if(currentSide === 'front' && currentCard.audioBack) {
